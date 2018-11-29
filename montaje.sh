@@ -29,6 +29,7 @@ fi
 echo "pwd: $(pwd)"
 echo "Montando $linea1 en $linea2"
 mount "$linea1" "$linea2"
+echo "Se va a modificar el fichero /etc/fstab, para que se monte el disco cada vez que arranque el sistema."
 echo "$liena1    $linea2      ext4    auto    0         0" >> /etc/fstab
 
 fi
