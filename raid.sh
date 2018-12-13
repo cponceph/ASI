@@ -30,3 +30,10 @@ if [[ $? != 0 ]]; then
 fi
 
 echo "Raid configurado correctamente."
+
+echo "Se van a escribir la configuración del raid en mdadm.conf para que se pueda configurar cada vez que arranca el sistema."
+mdadm --detail --scan >> /etc/mdadm/mdadm.conf;
+
+#Hay que escribir la siguiente instrucción para que se ejecute durante el boot del sistema:
+# mdadm -As "$linea1"
+#Con el fin de que el raid esté activo
