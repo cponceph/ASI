@@ -22,7 +22,7 @@ fi
 echo "mdamd ha sido instalado satisfactoriamente."
 echo "Montando raid especificado en el fichero $2"
 
-mdadm --create "$linea1" --level="$linea2" --raid-devices=$(echo $linea3 | wc -w)  "$linea3" > /dev/null 2>&1; #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Tambíen pide confirmación con yes, hay que evitarlos
+mdadm --create "$linea1" --metadata=0.90 --level="$linea2" --raid-devices=$(echo $linea3 | wc -w)  $linea3 # > /dev/null 2>&1; #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Tambíen pide confirmación con yes, hay que evitarlos
 
 if [[ $? != 0 ]]; then
     echo "Error al crear el raid, asegurese de estar pasando los directorios adecuados."
@@ -31,9 +31,11 @@ fi
 
 echo "Raid configurado correctamente."
 
-echo "Se van a escribir la configuración del raid en mdadm.conf para que se pueda configurar cada vez que arranca el sistema."
-mdadm --detail --scan >> /etc/mdadm/mdadm.conf;
+echo "Se va a escribir la configuración del raid en mdadm.conf para que se pueda configurar cada vez que arranca el sistema"
 
-#Hay que escribir la siguiente instrucción para que se ejecute durante el boot del sistema:
-# mdadm -As "$linea1"
-#Con el fin de que el raid esté activo
+mdadm --detail -scan >> /etc/mdadm/mdadm.conf;
+
+echo "Se va a modificar el fichero /etc/rc.local sustituyendo la ultima linea por otra instrucción que active el raid en el boot del sistema."
+# Hay que escribir la siguiente instrucción para que se ejecute durante el boot del sistema:
+echo "mdadm -As $linea1" >> /etc/rc.local; #Esto tan solo añade una linea al final del fichero pero hay que escribir esta linea antes del exit 0, porque sino no ejecuta la instrucción
+# Con el fin de que el raid esté activo
