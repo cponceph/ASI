@@ -1,15 +1,10 @@
-if test $# -ne 2; #Comprueba que se le pasa el parametro adecuado
-then
-    >&2 echo "Modo de empleo: configurar_cluster.sh [Opciones] fichero_configuracion"
-    exit 1;
+#!/bin/bash
 
-elif [[ $1 = "raid" ]]; then #Comprueba que sea el servicio raid
-    aux=1;
-    while read linea$aux #Lee las tres lineas del servcio
-    do
-        aux=$(($aux+1));
-    done < $2
-fi
+aux=1;
+while read linea$aux #Lee las tres lineas del servcio
+do
+    aux=$(($aux+1));
+done < $1
 
 echo "Instalando el programa mdadm"
 export  DEBIAN_FRONTEND=noninteractive;  # Esto bloquea toda la interacción con el ususario durante la instalación
@@ -21,7 +16,7 @@ apt-get install -y mdadm #> /dev/null 2>&1  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #fi
 
 echo "mdamd ha sido instalado satisfactoriamente."
-echo "Montando raid especificado en el fichero $2"
+echo "Montando raid especificado en el fichero $1"
 
 mdadm --create "$linea1" --metadata=0.90 --level="$linea2" --raid-devices=$(echo $linea3 | wc -w)  $linea3 > /dev/null 2>&1; #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Tambíen pide confirmación con yes, hay que evitarlos
 
