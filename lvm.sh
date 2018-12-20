@@ -1,15 +1,5 @@
 #!/bin/bash
-if test $# -ne 2; #Comprueba que se le pasa el parametro adecuado
-then
-    >&2 echo "Modo de empleo: configurar_cluster.sh [Opciones] fichero_configuracion"
-    exit 1;
 
-elif [[ $1 = "lvm" ]]; then #Comprueba que sea el servicio lvm
-aux=1;
-while read linea$aux #Lee las lineas del servcio
-do
-    aux=$(($aux+1));
-done < $2
 
 echo "Antes de usar el comando lvm, se comprobará que está instalado."
 which lvm > /dev/null 2>&1;
@@ -40,7 +30,7 @@ mem_disponible=0; #Suma de la memoria disponible en las particiones de el/los di
 while read linea$aux #Lee las tres lineas del servcio
 do
     aux=$(($aux+1));
-done < $2
+done < $1
 
 if [ $aux -lt 3 ] #Comprueba que el fichero leido está compuesto de al menos 3 líneas.
 then
@@ -57,7 +47,7 @@ do
         mem_total=$(($mem_total+$aux));
     fi
     iterador=$(($iterador+1));
-done < $2
+done < $1
 
 echo "El espacio requerido en total es $mem_total GB"
 
@@ -98,7 +88,7 @@ echo "Todas las particiones han sido borradas y los volumenes fisicos creados."
 echo "Construyendo volumen físico $linea1"
 vgcreate $linea1 $linea2 > /dev/null 2>&1;
 
-aux=$(echo $2 | wc -l);
+aux=$(echo $1 | wc -l);
 #Este bucle recorre las lineas del fichero que continen la configuración de los LV
 while read lin #Lee las lineas del servcio
 do
@@ -110,6 +100,6 @@ do
         lvcreate -L $tam -n $nombre $linea1 > /dev/null 2>&1;
     fi
     aux=$(($aux+1));
-done < $2
+done < $1
 
 fi
