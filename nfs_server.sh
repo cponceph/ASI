@@ -19,7 +19,6 @@ do
 
     #Añadimos la linea para exportar el directorio por todas las interfaces
     echo "$directorio$aux    *(rw,sync,no_root_squash,no_subtree_check)" >> /etc/exports;
-
     if [[ $? != 0 ]]; then 
             echo "Ha habido algun problema al crear el export, puede deberse a un fallo de instalacion o de privilegios del fichero /etc/exports"
             exit 1;
@@ -30,7 +29,7 @@ do
 done < $1
 
 #Permitimos la conectividad a través de portmap
-echo "portmap:ALL" >> /etc/hosts.allow
+echo "portmap:ALL" >> /etc/hosts.allow;
 
 #Una vez generado el fichero de exports correctamente rearrancamos el servicio
 service nfs-kernel-server restart;

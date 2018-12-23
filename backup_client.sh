@@ -10,10 +10,10 @@ do
   aux=$(($aux+1))
 done < $1
 
-ORIGEN="$linea1"
-HOST="$linea2"
-DESTINO="$linea3"
-FREC="$linea4"
+ORIGEN="$linea0"
+HOST="$linea1"
+DESTINO="$linea2"
+FREC="$linea3"
 
 #Checks
 #Check1 existe el directorio origen
@@ -26,7 +26,8 @@ exit 1;
 fi
 
 #Check2 el destino es alcanzable
-if [[ `ping -c1 -W1 $HOST > /dev/null` != 0 ]]; then
+ping -c1 -W1 $HOST > /dev/null;
+if [[ $? != 0 ]]; then
 echo "Error de host inalcanzable, no se puede encontrar el host $HOST";
 exit 1;
 fi
@@ -40,6 +41,10 @@ exit 1;
 fi
 
 #Todo correcto
+#Instalamos en el servidor rsync si no existiese. Lo cual sería absurdo pero quien sabe
+ssh -n root@"$HOST" export DEBIAN_FRONTEND=noninteractive;
+ssh -n root@"$HOST" apt-get update;
+ssh -n root@"$HOST" apt-get -q -y install rsync;
 
 #Realizamos el primer backup completo
 rsync -ab --delete  --suffix=_`date +%F`  "$ORIGEN" root@"$HOST":"$DESTINO";

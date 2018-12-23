@@ -8,7 +8,7 @@ apt-get -q -y install nfs-common;
 while read servicio$aux
 do 
     
-    if [[ `echo "$directorio$aux" | awk -F ' ' '{print NF; exit}'` -eq 3 ]];
+    if [[ `echo "$directorio$aux" | awk -F ' ' '{print NF; exit}'` -eq 3 ]];then
     echo "Error por falta de parámetros de configuración";
     exit 1;
     fi
@@ -17,15 +17,16 @@ do
     DIR=`echo $servicio$aux | awk '{ printf $2 }'`;
     MOUNTPOINT=`echo $servicio$aux | awk '{ printf $3 }'`;
 
-    if [[ `ping -c1 -W1 $HOST > /dev/null` != 0 ]]; then
+    ping -c1 -W1 $HOST > /dev/null;
+    if [[ $? != 0 ]]; then
     echo "Error de host inalcanzable, no se puede encontrar el host $HOST";
     exit 1;
     fi
 
-    cd "$DIR" > /dev/null 2>&1;
+    cd "$MOUNTPOINT" > /dev/null 2>&1;
     if [[ $? != 0 ]]; then #Comprueba que se ha accedido al directorio, sino se crea
-    echo "Directorio no existe, se va a crear $DIR"
-    mkdir -p "$DIR";
+    echo "Directorio no existe, se va a crear $MOUNTPOINT"
+    mkdir -p "$MOUNTPOINT";
     
 
         if [[ $? != 0 ]]; then #Comprueba que se ha creado el directorio correctamente
@@ -33,10 +34,10 @@ do
             exit 2;
         fi
     else
-    echo "Directorio: $DIR, ha sido creado."
+    echo "Directorio: $MOUNTPOINT, ha sido creado."
     fi
 
-    mount "$HOST:$DIR $MOUNTPOINT";
+    mount "$HOST:$DIR" "$MOUNTPOINT";
     if [[ $? != 0 ]]; then 
             echo "El directorio no ha podido ser montado, asegúrese de que el servicio NFS exporta correctamente en $HOST"
             exit 1;

@@ -1,12 +1,16 @@
-#!/bin/bash
+#!/bin/bash +x
 if test $# -ne 1; #Comprueba que se le pasa el parametro adecuado
 then
     >&2 echo "Modo de empleo: configurar_cluster.sh fichero_configuracion"
     exit 1;
 fi
+
 Cont_Linea=0;
-while read linea #Lee el fichero pasado como parametro linea a linea
-do
+
+#Hacemos los checks de sintaxis de los ficheros de perfil de servicio en el nodo de control 
+#y ejecutamos los scripts de configuracion en remoto recogiendo resultados
+while read linea
+do  
     Cont_Linea=$(($Cont_Linea+1));
     if [[ "$linea" = "#"* || -z $linea ]]; then #Se salta las lineas en blanco y las que mepiecen por '#'
         true;
@@ -27,18 +31,6 @@ do
         fi
 
     fi
-
-done < $1
-
-#Hacemos los checks de sintaxis de los ficheros de perfil de servicio en el nodo de control 
-#y ejecutamos los scripts de configuracion en remoto recogiendo resultados
-while read linea
-do
-
-    #Saltamos las lineas en blanco y las que empiecen por '#'
-    if [[ "$linea" = "#"* || -z $linea ]]; then 
-        true;
-    else
 
     HOST=`echo $linea | awk '{ printf $1 }'`;
     SERVICIO=`echo $linea | awk '{ printf $2 }'`;
@@ -62,7 +54,8 @@ do
     esac
     
     #Copiamos el fichero de configuracion al host
-    scp "$CONFILE" practicas@"$HOST":/tmp;
+    scp -oStrictHostKeyChecking=no "$CONFILE" root@"$HOST":/tmp;
+    scp -oStrictHostKeyChecking=no "$SERVICIO".sh root@"$HOST":/tmp;
 
     #Recogemos el resultado
     if [ $? -ne 0 ]; then 
@@ -71,25 +64,21 @@ do
     fi
 
     #Ejecutamos en remoto
-    ssh root@"$HOST" 'bash -s' < "$SERVICIO".sh /tmp/"$CONFILE";
-
+    ssh -n root@"$HOST" chmod +x /tmp/"$SERVICIO".sh;  ssh -n root@"$HOST" /tmp/"$SERVICIO".sh /tmp/"$CONFILE";
     #Recogemos resultado
     if [ $? -ne 0 ]; then 
     >&2 echo "Error ejecutando el script de configuracion del servicio $SERVICIO remotamente en $HOST\n";
     exit 5;
     fi
-
     #Eliminamos el fichero de configuracion
-    ssh root@"$HOST" rm -rf /tmp/"$CONFILE";
+    ssh -n root@"$HOST" rm -rf /tmp/"$CONFILE";
+    ssh -n root@"$HOST" rm -rf /tmp/"$SERVICIO".sh;
+
 
     #Recogemos resultado
     if [ $? -ne 0 ]; then 
     >&2 echo "Error eliminando el fichero de configuracion del servicio $SERVICIO remotamente en $HOST\n";
     exit 6;
     fi
-
-    fi
-    
-    
-
+    echo "VAYA VAINA"
 done < $1

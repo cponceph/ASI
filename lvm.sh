@@ -58,7 +58,7 @@ while [ $it != 0 ] # Recorre las palabras (directorios) expresado en la segunda 
 do
     aux=$(echo $linea2 | cut -d " " -f $it); # Obtiene el directorio del disco
     tam=$(lsblk -o SIZE $aux | cut -d "G" -f 1 | sed -n 2p);
-    mem_disponible=$(($mem_disponible+$tam));
+    mem_disponible=$(($mem_disponible + $tam));
     it=$(($it-1));
 done
 
