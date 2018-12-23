@@ -65,7 +65,7 @@ done
 
 if [ $mem_disponible -lt $mem_total ] #Comprueba que el espacio requerido y el existente concuerden
 then
-    echo "La memoria disponible en los discos es de un total de $mem_disponible Gb
+    >&2 echo "La memoria disponible en los discos es de un total de $mem_disponible Gb
     Y la que solicita el fichero es $mem_total Gb"
     exit 1;
 fi
