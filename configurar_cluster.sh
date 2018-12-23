@@ -80,5 +80,4 @@ do
     >&2 echo "Error eliminando el fichero de configuracion del servicio $SERVICIO remotamente en $HOST\n";
     exit 6;
     fi
-    echo "VAYA VAINA"
 done < $1
