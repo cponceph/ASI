@@ -71,7 +71,7 @@ do
     fi
 
     #Ejecutamos en remoto
-    ssh practicas@"$HOST" 'bash -s' < "$SERVICIO".sh /tmp/"$CONFILE";
+    ssh root@"$HOST" 'bash -s' < "$SERVICIO".sh /tmp/"$CONFILE";
 
     #Recogemos resultado
     if [ $? -ne 0 ]; then 
@@ -80,7 +80,7 @@ do
     fi
 
     #Eliminamos el fichero de configuracion
-    ssh practicas@"$HOST" rm -rf /tmp/"$CONFILE";
+    ssh root@"$HOST" rm -rf /tmp/"$CONFILE";
 
     #Recogemos resultado
     if [ $? -ne 0 ]; then 
