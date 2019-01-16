@@ -12,20 +12,10 @@ Cont_Linea=0;
 while read linea
 do  
     Cont_Linea=$(($Cont_Linea+1));
-    if [[ "$linea" = "#"* || -z $linea ]]; then #Se salta las lineas en blanco y las que mepiecen por '#'
-        true;
+    if [[ ${linea:0:1} == "#" ]] || [[ -z $linea  ]]; then #Se salta las lineas en blanco y las que empiecen por '#'
+        continue;
     else
-
-        if [[ ($(echo $linea | wc -w) != 3 ) ]]; then
-            >&2 echo "Linea $Cont_Linea no cumple el formato"
-            exit 2
-        fi
-        echo $linea | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" > /dev/null;
-        retorno=$?
-        echo $linea | grep -E "*.conf$" > /dev/null;
-        retorno2=$?
-
-        if [[ $retorno != 0 || $retorno2 != 0 ]]; then
+        if [[ `echo $linea | awk --field-separator=" " '{ print NF }'` != 3 ]]; then
             >&2 echo "Linea $Cont_Linea no cumple el formato"
             exit 2
         fi
