@@ -15,7 +15,7 @@ do
     if [[ ${linea:0:1} == "#" ]] || [[ -z $linea  ]]; then #Se salta las lineas en blanco y las que empiecen por '#'
         continue;
     else
-        if [[ `echo $linea | awk --field-separator=" " '{ print NF }'` != 3 ]]; then
+        if [[ `echo $linea | awk '{ print NF }'` != 3 ]]; then
             >&2 echo "Linea $Cont_Linea no cumple el formato"
             exit 2
         fi
